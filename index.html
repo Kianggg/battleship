@@ -2,36 +2,34 @@
   <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
 
   <head>
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/images/TicTacToeFaviconMatched.png">
+    <!-- Favicon 
+    <link rel="icon" type="image/x-icon" href="/images/TicTacToeFaviconMatched.png"> -->
     <!-- CSS and Font -->
     <link href="styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gaegu">
     <!-- Site Title -->
-    <title>Tic-Tac-Toe</title>
+    <title>Battleship</title>
   </head>
 
   <body>
     <span id="announcements">
     </span>
-    <div id="gameboard">
-      <ul id="tictactoe">
-      </ul>
+    <div id="gameboard" class="grid-container">
     </div>
   </body>
 
   <script>
-    let numRows = 3;
-    let numColumns = 3;
+    let numRows = 6;
+    let numColumns = 6;
     for (let i = 0; i < numRows; i++)
     {
-      $("#tictactoe").append("<row></row>");
+      $("#gameboard").append('<row class="grid-item"></row>');
     }
     for (let n = 0; n < numColumns; n++)
     {
-      $("row").append('<li><button></button></li>');
+      $("row").append('<div class="grid-item"><button></button></div>');
     }
-
+    
     /* Dynamically set cell IDs */
     $("button").each(function(index) {
       $(this).attr("id", index);
@@ -41,7 +39,7 @@
     /* Setting up first turn */
     let turn = 0;
     let gameActive = true;
-    $("#announcements").text("O moves first");
+    $("#announcements").text("Can you find the ships?");
 
     /* Handling a Click */
     $(document).ready(function() {
@@ -69,11 +67,9 @@
         turn++;
 
         /* Check to see if game has ended. Board IDs:
-
             0 1 2
             3 4 5
             6 7 8
-
         */
 
         let winningMoves = [
