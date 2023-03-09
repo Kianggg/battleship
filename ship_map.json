@@ -4,9 +4,14 @@
 
 [
 
-{ "name": "ship1", "orientation": "vertical", "size": 4, "coords": [2, 3] }, 
+{ "name": "Destroyer", "orientation": "vertical", "size": 2, "coords": [1, 1] }, 
 
-{ "name": "ship2", "orientation": "horizontal", "size": 3, "coords": [3, 3] }
+{ "name": "Submarine", "orientation": "horizontal", "size": 3, "coords": [2, 3] },
+
+{ "name": "Cruiser", "orientation": "horizontal", "size": 3, "coords": [3, 0] },
+
+{ "name": "Battleship", "orientation": "vertical", "size": 4, "coords": [0, 1] }
 
 ]
+
 }

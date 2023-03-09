@@ -2,8 +2,6 @@
   <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
 
   <head>
-    <!-- Favicon 
-    <link rel="icon" type="image/x-icon" href="/images/TicTacToeFaviconMatched.png"> -->
     <!-- CSS and Font -->
     <link href="styles.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Gaegu">
@@ -19,6 +17,29 @@
   </body>
 
   <script>
+    /* Set locations of ships */
+    const shipMap = { "ships": [
+
+      { "name": "Destroyer", "orientation": "vertical", "size": 2, "coords": [1, 1] }, 
+
+      { "name": "Submarine", "orientation": "horizontal", "size": 3, "coords": [2, 3] },
+
+      { "name": "Cruiser", "orientation": "horizontal", "size": 3, "coords": [3, 0] },
+
+      { "name": "Battleship", "orientation": "vertical", "size": 4, "coords": [0, 1] }
+
+      ]
+
+    }
+
+    /* Set number of turns */
+    const turnLimit = 20;
+
+    /* Keep track of which ships have been sunk */
+    /* This will be modified later by placeShips() and the click-handling function */
+    var shipsToSink = [];
+
+    /* Populate game board */
     let numRows = 6;
     let numColumns = 6;
     for (let i = 0; i < numRows; i++)
@@ -29,12 +50,18 @@
     {
       $("row").append('<div class="grid-item"><button></button></div>');
     }
+
+    /* Create the map from which we will be populating the board with ships */
+    var map = shipMap;
     
     /* Dynamically set cell IDs */
     $("button").each(function(index) {
       $(this).attr("id", index);
       $(this).attr("class", "blank");
     });
+
+    /* Place the ships */
+    placeShips();
 
     /* Setting up first turn */
     let turn = 0;
@@ -52,87 +79,59 @@
         }
 
         let id = $(this).attr('id');
-
-        let player = turn % 2;
+        let buttonStatus = $(this).attr('class');
 
         /* Change image of clicked button and text of announcements */
-        if (player == 0) {
-          $(this).attr("class", "O");
-          $("#announcements").text("X to move");
+        if (buttonStatus == "blank") {
+          /* Check to see if there is any ship there */
+          if ($(this).children().length > 0 ) {
+            $(this).attr("class", "hit");
+            $("#announcements").text("Hit!");
+            $(this).children().remove();
+          }
+          else {
+            $(this).attr("class", "miss");
+            $("#announcements").text("Miss!");
+          }
         }
         else {
-          $(this).attr("class", "X");
-          $("#announcements").text("O to move");
+          /* If non-empty cell clicked, end the function without continuing and incrementing the turn count */
+          return;
         }
+
+        /* Check to see if any ships were sunk */
+        for (let i = shipsToSink.length - 1; i > -1; i--) {
+          if ($("#" + shipsToSink[i]).length == 0) {
+            $("#announcements").text(shipsToSink[i] + " has been sunk!");
+            shipsToSink.splice(i, 1);
+          }
+        }
+
+        /* Increment the turn */
         turn++;
+        $("#announcements").append("<p>Shots taken: " + turn + " of " + turnLimit + "</p>");
 
-        /* Check to see if game has ended. Board IDs:
-            0 1 2
-            3 4 5
-            6 7 8
-        */
-
-        let winningMoves = [
-          [[3, 6], [4, 8], [1, 2]], /* If a player marks square with ID 0, it's a win if they are also in squares 3 and 6, 4 and 8, OR 1 and 2. */
-          [[0, 2], [4, 7]],
-          [[0, 1], [4, 6], [5, 8]],
-          [[0, 6], [4, 5]],
-          [[3, 5], [1, 7], [0, 8], [2, 6]],
-          [[3, 4], [2, 8]],
-          [[0, 3], [2, 4], [7, 8]],
-          [[1, 4], [6, 8]],
-          [[6, 7], [0, 4], [2, 5]],
-        ];
-
-        for (let n = 0; n < winningMoves[id].length; n++) {
-          let pair = winningMoves[id][n];
-
-          if (player == 0) /* Check for O */
-          {
-            if (($("#" + pair[0]).attr("class") == "O") &&
-                ($("#" + pair[1]).attr("class") == "O"))
-            {
-              endGame(0);
-              return;
-            }
-          }
-          else /* Check for X */
-          {
-            if (($("#" + pair[0]).attr("class") == "X") &&
-                ($("#" + pair[1]).attr("class") == "X"))
-            {
-              endGame(1);
-              return;
-            }
-          }
+        /* Check to see if game has ended */
+        if (shipsToSink.length == 0) {
+          endGame(0);
+          return;
         }
-
-        /* Check for a tie */
-        let isTie = true;
-        $("button").each(function() {
-          if ($(this).attr("class") == "blank")
-          {
-            isTie = false;
-          }
-        });
-
-        if (isTie) { endGame(2); }
+        else if (turn >= turnLimit) {
+          endGame(1);
+          return;
+        }
       });
     });
 
     /* Ending the game */
-    /* 0 is O win, 1 is X win, 2 is tie */ 
-    function endGame(winner) {
+    /* 0 is win, 1 is lose */ 
+    function endGame(result) {
       gameActive = false;
-      if (winner == 0) {
-        $("#announcements").text("O wins");
-      }
-      else if (winner == 1)
-      {
-        $("#announcements").text("X wins");
+      if (result == 0) {
+        $("#announcements").text("Congratulations! You win!");
       }
       else {
-        $("#announcements").text("It's a tie!");
+        $("#announcements").text("Better luck next time...!");
       }
       $("#announcements").append("<p>Click any square to play again!</p>");
     };
@@ -144,11 +143,42 @@
       $("button").attr("class", "blank");
 
       /* Reset text */
-      $("#announcements").text("O moves first!");
+      $("#announcements").text("Find the ships again!");
+
+      /* Replace ships */
+      placeShips();
 
       /* Reset variables */
       turn = 0;
       gameActive = true;
+    }
+
+    function placeShips() {
+      /* Place Ships */
+      for (let i = 0; i < map.ships.length; i++) {
+        /* Calculate IDs to hit */
+        let startingColumn = map.ships[i].coords[0];
+        let startingRow = map.ships[i].coords[1];
+        let startingCellID = (startingRow * numColumns) + startingColumn;
+
+        if (map.ships[i].orientation == "horizontal"){
+        /* For horizontal ships */
+          for (let n = 0; n < map.ships[i].size; n++) {
+            let cell = startingCellID + n;
+            $("#" + cell).append("<div id = " + map.ships[i].name + "></div>");
+          }
+        }
+        else {
+          /* For vertical ships */
+          for (let n = 0; n < map.ships[i].size; n++) {
+            let cell = startingCellID + (n * numColumns);
+            $("#" + cell).append("<div id = " + map.ships[i].name + "></div>");
+          }
+        }
+        
+        /* Keep track of which ships have been sunk */
+        shipsToSink.push(map.ships[i].name);
+      }
     }
   </script>
 </html>

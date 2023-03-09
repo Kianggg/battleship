@@ -1,8 +1,13 @@
 :root {
-    --background: #1e1530;
+    --background: #0f3c75;
     --font-color: #f0f8ff;
     --gridlines: #7c7676;
-    --grid-size: 64px;
+
+    --blank: #95d0df;
+    --hit: #a5df8f;
+    --miss: #e76a54;
+
+    --cell-size: 64px;
 }
 
 body {
@@ -11,6 +16,11 @@ body {
     font-size: xx-large;
     font-family: 'Gaegu', sans-serif;
     background-color: var(--background);
+
+    /* This is from OpenGameArt with a CC0 license */
+    /* https://opengameart.org/content/cartoon-waves-animated */
+    background-image: url("https://i.imgur.com/MhQUDVt.png");
+
     color: var(--font-color);
 }
 
@@ -20,7 +30,7 @@ body {
     grid-auto-rows: 60px;
     grid-gap: 20px;
 
-    border: 1px solid var(--gridlines);
+    /* border: 1px solid var(--gridlines); */
     padding: 20px;
 }
 
@@ -28,8 +38,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border: 1px solid var(--gridlines);
 }
 
 ul {
@@ -43,13 +51,14 @@ row {
 }
 
 button {
-    height: var(--grid-size);
-    width: var(--grid-size);
+    height: var(--cell-size);
+    width: var(--cell-size);
     text-decoration: none;
-    background-size: 100% 100%;
-    background-image: url("/images/TileBlank_256.png");
+    /* background-size: 100% 100%; */
+    /* background-image: url("/images/TileBlank_256.png"); */
+    background-color: var(--blank);
     transition: 0.3s;
-    border: 4px solid var(--background);
+    border: 4px solid var(--background); 
 }
 
 button:hover {
@@ -58,13 +67,18 @@ button:hover {
 }
 
 .blank {
-    background-image: url("images/TileBlank_256.png");
+    /* background-image: url("images/TileBlank_256.png"); */
+    background-color: var(--blank);
 }
 
-.X {
-    background-image: url("images/TileX_256.png");
+.hit {
+    /* background-image: url("images/TileX_256.png"); */
+    background-color: var(--hit);
 }
 
-.O {
-    background-image: url("images/TileO_256.png");
+.miss {
+    /* background-image: url("images/TileO_256.png"); */
+    background-color: var(--miss);
 }
+
+/* Ship Classes */
